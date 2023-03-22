@@ -1,10 +1,43 @@
-// Import the required modules
 const { google } = require('googleapis');
-const auth = new google.auth.GoogleAuth({
-    keyFile: '/ServiceAccountKey/credentials.json',
-    scopes: ['https://www.googleapis.com/auth/calendar']
+
+const oauth2Client = new google.auth.OAuth2(
+    '30570084324-gq9n9off4afu37or2nv38nmjo3k5vj4t.apps.googleusercontent.com',
+    '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',
+    //REDIRECT_URI
+);
+
+const scopes = [
+    'https://www.googleapis.com/auth/calendar'
+];
+
+// Generate the URL that the user will need to visit to authorize the application
+const authUrl = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: scopes,
 });
-const calendar = google.calendar({ version: 'v3' });
+
+console.log('Authorize this app by visiting this url:', authUrl);
+
+// After the user authorizes the application, the API will redirect to the specified URI with an authorization code
+// You can use this code to obtain an access token and refresh token for the user
+oauth2Client.getToken(authorizationCode, (err, token) => {
+    if (err) {
+        console.error('Error retrieving access token', err);
+        return;
+    }
+
+    // Set the access token on the OAuth2 client for future API calls
+    oauth2Client.setCredentials(token);
+});
+
+oauth2Client.setCredentials({
+    access_token: tokens.access_token,
+    refresh_token: tokens.refresh_token,
+    token_type: 'Bearer',
+    expiry_date: new Date(tokens.expiry_date),
+});
+
+const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 let calendarId = "https://calendar.google.com/calendar/embed?src=nabeel.sohail2630%40outlook.com&ctz=Asia%2FKarachi"
 
 // Define the parameters to create an event
